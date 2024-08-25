@@ -1,24 +1,23 @@
-# uber-clone
+# uber-clone - Installations and packages
+1. vue create uber-clone (manually)
+2. vue add tailwind
+3. npm install --global vue-pwa-asset-generator
+4. npm i axios lodash pinia pinia-plugin-persistedstate vue-material-design-icons\
+5. Create folder in root > server
+   1. npm init (default setup)
+   2. npm i axios body-parser cors dotenv express nodemon
+6. Add below line in .eslintrc.js
+   ```
+      env:{
+         node: true,
+         ....,
+         
+         'vue/setup-compiler-macros': true
+      }
+   ```
 
-## Project setup
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+7. For Map - we using Vue Leaflet
+   ```
+      npm install leaflet
+      npm install leaflet-routing-machine 
+   ```
