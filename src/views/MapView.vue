@@ -7,7 +7,8 @@
       <div
         class="w-full text-center border-t-2 p-1.5 text-gray-700 text-lg font-semibold"
       >
-        Estimated Distance: {{ totalDistance }} & Estimated Time: {{ totalTime }}
+        Estimated Distance: {{ totalDistance }} & Estimated Time:
+        {{ totalTime }}
       </div>
       <div class="scrollSelection">
         <div class="bg-custom-gray">
@@ -16,9 +17,9 @@
             <div class="w-full ml-3">
               <div class="flex items-center justify-between">
                 <div class="text-2xl mb-1">Uber X</div>
-                <div class="text-xl mb-1">Rs 1500/-</div>
+                <div class="text-xl mb-1">Rs {{ calculatePrice(1) }}/-</div>
               </div>
-              <div class="text-gray-500">2 hours</div>
+              <div class="text-gray-500">{{ totalTime }}</div>
             </div>
           </div>
         </div>
@@ -28,10 +29,10 @@
             <img width="75" src="img/uber/comfort.png" alt="" />
             <div class="w-full ml-3">
               <div class="flex items-center justify-between">
-                <div class="text-2xl mb-1">Uber X</div>
-                <div class="text-xl mb-1">Rs 1500/-</div>
+                <div class="text-2xl mb-1">Comfort</div>
+                <div class="text-xl mb-1">Rs {{ calculatePrice(1.25) }}/-</div>
               </div>
-              <div class="text-gray-500">2 hours</div>
+              <div class="text-gray-500">{{ totalTime }}</div>
             </div>
           </div>
         </div>
@@ -41,10 +42,10 @@
             <img width="75" src="img/uber/uberxl.png" alt="" />
             <div class="w-full ml-3">
               <div class="flex items-center justify-between">
-                <div class="text-2xl mb-1">Uber X</div>
-                <div class="text-xl mb-1">Rs 1500/-</div>
+                <div class="text-2xl mb-1">Uber XL</div>
+                <div class="text-xl mb-1">Rs {{ calculatePrice(1.5) }}/-</div>
               </div>
-              <div class="text-gray-500">2 hours</div>
+              <div class="text-gray-500">{{ totalTime }}</div>
             </div>
           </div>
         </div>
@@ -85,7 +86,7 @@ onMounted(() => {
 const initMap = () => {
   map.value = L.map("map", {
     zoomControl: false,
-  }).setView([20.5576062, 74.5246514], 12);
+  }).setView([20.5576062, 74.5246514], 10);
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     minZoom: 6,
@@ -94,6 +95,13 @@ const initMap = () => {
 
   if (direction.pickup != null && direction.destination != null) {
     const routingControl = L.Routing.control({
+      fitSelectedRoutes: true,
+      lineOptions: {
+        styles: [{ color: "blue", opacity: 0.6, weight: 5 }],
+        extendToWaypoints: true,
+        missingRouteTolerance: 1,
+      },
+      show: true,
       waypoints: [
         L.latLng(direction.pickup.lat, direction.pickup.lon), // Start Point
         L.latLng(direction.destination.lat, direction.destination.lon), // End Point
@@ -123,20 +131,29 @@ const totalTime = computed(() => {
   if (time.value > 0) {
     const hours = Math.floor(time.value / 3600);
     const minutes = Math.floor((time.value % 3600) / 60);
-    console.log(` travel time: ${hours} hours and ${minutes} minutes`);
 
     return hours + " hrs " + minutes + " mins";
   }
 
   return "0 mins";
 });
+
+const calculatePrice = (multiplier) => {
+  console.log(distance.value);
+  
+  if (distance.value > 0) {
+    return ((distance.value / 900) * multiplier).toFixed(2);
+  }
+
+  return 0;
+};
 </script>
 
 <style lang="scss">
 #MapView {
   #map {
     width: 100%;
-    height: 55vh;
+    height: 50vh;
     top: 0;
     left: 0;
   }
