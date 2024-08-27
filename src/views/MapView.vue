@@ -1,5 +1,14 @@
 <template>
   <div id="MapView">
+    <div class="leaflet-top leaflet-left" style="pointer-events: auto">
+      <button
+        class="absolute z-50 rounded-full bg-white p-1 top-8 left-4"
+        @click="goBack()"
+      >
+        <ArrowLeftIcon :size="40" />
+      </button>
+    </div>
+
     <div id="map"></div>
 
     <div id="VehicleSelection" class="w-full">
@@ -65,58 +74,92 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine";
-
+import ArrowLeftIcon from "vue-material-design-icons/ArrowLeft.vue";
+import { useRouter } from "vue-router";
 import { useDirectionStore } from "@/Store/direction-store";
 
 const map = ref(null);
+const router = useRouter();
+const direction = useDirectionStore();
+
 const time = ref(0);
 const distance = ref(0);
-const direction = useDirectionStore();
+
+if (!direction.pickup || !direction.destination) {
+  router.push({ name: "direction" });
+}
+
+const LatLon = {
+  start: {
+    lat: direction.pickup.lat,
+    lon: direction.pickup.lon,
+  },
+  end: {
+    lat: direction.destination.lat,
+    lon: direction.destination.lon,
+  },
+};
+
+const DefaultIcon = L.icon({
+  iconUrl: "images/marker-icon.png",
+  shadowUrl: "images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
 
 onMounted(() => {
   setTimeout(() => {
     initMap();
-  }, 50);
+  }, 100);
 });
 
 const initMap = () => {
   map.value = L.map("map", {
     zoomControl: false,
-  }).setView([20.5576062, 74.5246514], 10);
+    fullscreenControl: false,
+  }).setView([LatLon.start.lat, LatLon.start.lon], 10);
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     minZoom: 6,
     maxZoom: 19,
   }).addTo(map.value);
 
-  if (direction.pickup != null && direction.destination != null) {
-    const routingControl = L.Routing.control({
-      fitSelectedRoutes: true,
-      lineOptions: {
-        styles: [{ color: "blue", opacity: 0.6, weight: 5 }],
-        extendToWaypoints: true,
-        missingRouteTolerance: 1,
-      },
-      show: true,
-      waypoints: [
-        L.latLng(direction.pickup.lat, direction.pickup.lon), // Start Point
-        L.latLng(direction.destination.lat, direction.destination.lon), // End Point
-      ],
-      routeWhileDragging: true,
-    }).addTo(map.value);
+  const control = L.Routing.control({
+    fitSelectedRoutes: true,
+    lineOptions: {
+      styles: [{ color: "blue", opacity: 0.8, weight: 5 }],
+      extendToWaypoints: true,
+      missingRouteTolerance: 1,
+    },
+    show: true,
+    routeWhileDragging: true,
+    waypoints: [
+      L.latLng(LatLon.start.lat, LatLon.start.lon),
+      L.latLng(LatLon.end.lat, LatLon.end.lon),
+    ],
+  }).addTo(map.value);
 
-    console.log(routingControl);
+  control.on("routesfound", function (e) {
+    const routes = e.routes;
+    time.value = routes[0].summary.totalTime; // Gets total time in seconds
+    distance.value = routes[0].summary.totalDistance; // Gets total distance in meters
+  });
 
-    routingControl.on("routesfound", function (e) {
-      const routes = e.routes;
-      time.value = routes[0].summary.totalTime; // Gets total time in seconds
-      distance.value = routes[0].summary.totalDistance; // Gets total distance in meters
-    });
-  }
+  control.getContainer().style.display = "none";
+};
+
+const goBack = () => {
+  direction.pickup = null;
+  direction.destination = null;
+  router.push({ name: "direction" });
 };
 
 const totalDistance = computed(() => {
@@ -139,8 +182,6 @@ const totalTime = computed(() => {
 });
 
 const calculatePrice = (multiplier) => {
-  console.log(distance.value);
-  
   if (distance.value > 0) {
     return ((distance.value / 900) * multiplier).toFixed(2);
   }
