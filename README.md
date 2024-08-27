@@ -21,3 +21,15 @@
       npm install leaflet
       npm install leaflet-routing-machine 
    ```
+
+8. Update vue.config.js for PWA
+9. update package.json scripts
+    ```
+      "pwa": "npm run build && npx http-server dist",
+      "icons": "npx vue-pwa-asset-generator -a public/img/logo/uber.png -o public/img/icons/ -b '#000000'"
+    ```
+10. Run PWA
+    ``` 
+      npm run icons
+      npm run pwa
+    ```
