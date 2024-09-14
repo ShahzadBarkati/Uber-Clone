@@ -5,7 +5,9 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "pwa": "npm run build && npx http-server dist",
+    "icons": "npx vue-pwa-asset-generator -a public/img/logo/uber.png -o public/img/icons/ -b '#000000'"
   },
   "dependencies": {
     "autoprefixer": "^10",

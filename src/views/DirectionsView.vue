@@ -3,7 +3,7 @@
     <div class="grid grid-cols-12 mt-4 shadow-md">
       <div class="col-span-2 mx-auto">
         <div>
-          <ArrowIcon :size="35" />
+          <ArrowIcon :size="35" @click="router.push({ name: 'home' })" />
         </div>
 
         <div class="w-full h-16 mt-4">
@@ -68,7 +68,7 @@ import { debounce } from "lodash";
 import axios from "axios";
 import { useRouter } from "vue-router";
 
-let isPickupActive = ref(false);
+let isPickupActive = ref(true);
 let pickup = ref("");
 let destination = ref("");
 let addressData = ref("");
