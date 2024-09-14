@@ -1,6 +1,6 @@
-#Uber-clone - Frontend: Vue3 (Composition API), Backend: Express JS, Map & Direction API: OSM (Free API)
+# Uber-clone - Frontend: Vue3 (Composition API), Backend: Express JS, Map & Direction API: OSM (Free API) 
 
-### uber-clone - Installations and packages
+## uber-clone - Installations and packages
 
 ###### 1. vue create uber-clone (manually)
 ###### 2. vue add tailwind
@@ -24,7 +24,6 @@
       npm install leaflet
       npm install leaflet-routing-machine 
    ```
-
 ###### 8. Update vue.config.js for PWA
 ###### 9. update package.json scripts
     ```
@@ -36,3 +35,4 @@
       npm run icons
       npm run pwa
     ```
+    
